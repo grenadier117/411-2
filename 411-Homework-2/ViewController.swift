@@ -9,17 +9,10 @@
 import UIKit
 
 class ViewController: UIViewController {
-
-    @IBOutlet weak var dateTextField: UITextField!
-    @IBOutlet weak var claimTitleTextFIeld: UITextField!
-    @IBOutlet weak var statusLabel: UILabel!
-    let claimService = ClaimService()
-    
-    @IBOutlet weak var dividerView: UIView!
-    @IBOutlet weak var manualSectionLabel: UILabel!
     let statusLabel2: UILabel = UILabel()
     let claimTitleTextField2: UITextField = UITextField()
     let dateTextField2: UITextField = UITextField()
+    let claimService = ClaimService()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,7 +25,7 @@ class ViewController: UIViewController {
         label.sizeToFit()
         label.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(label)
-        label.topAnchor.constraint(greaterThanOrEqualTo: manualSectionLabel.topAnchor, constant: 30).isActive = true
+        label.topAnchor.constraint(greaterThanOrEqualTo: view.safeAreaLayoutGuide.topAnchor, constant: 30).isActive = true
         label.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 0).isActive = true
         label.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: 0).isActive = true
         //END MANUAL SECTION
@@ -61,7 +54,7 @@ class ViewController: UIViewController {
         claimTitleTextField2.heightAnchor.constraint(equalToConstant: 34).isActive = true
         claimTitleTextField2.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 15).isActive = true
         claimTitleTextField2.leadingAnchor.constraint(equalTo: claimTitleLabel.trailingAnchor, constant: 20).isActive = true
-        claimTitleTextField2.trailingAnchor.constraint(equalTo: dividerView.trailingAnchor, constant: 0).isActive = true
+        claimTitleTextField2.trailingAnchor.constraint(greaterThanOrEqualTo: view.trailingAnchor, constant: -20).isActive = true
         claimTitleLabel.centerYAnchor.constraint(equalTo: claimTitleTextField2.centerYAnchor, constant: 0).isActive = true
         
         dateTextField2.borderStyle = .roundedRect
@@ -70,7 +63,7 @@ class ViewController: UIViewController {
         dateTextField2.heightAnchor.constraint(equalToConstant: 34).isActive = true
         dateTextField2.topAnchor.constraint(equalTo: claimTitleTextField2.bottomAnchor, constant: 10).isActive = true
         dateTextField2.leadingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: 20).isActive = true
-        dateTextField2.trailingAnchor.constraint(equalTo: dividerView.trailingAnchor, constant: 0).isActive = true
+        dateTextField2.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20).isActive = true
         titleLabel.centerYAnchor.constraint(equalTo: dateTextField2.centerYAnchor, constant: 0).isActive = true
         
         let addButton2 = UIButton(type: .system)
@@ -102,53 +95,30 @@ class ViewController: UIViewController {
         statusLabel2.leadingAnchor.constraint(equalTo: statusTitleLabel.trailingAnchor, constant: 20).isActive = true
         statusLabel2.trailingAnchor.constraint(equalTo: dateTextField2.trailingAnchor, constant: 0).isActive = true
     }
-
-    @IBAction func addButton(_ sender: Any) {
-        addClaim(title: claimTitleTextFIeld.text ?? "", date: dateTextField.text ?? "", manual: false)
-    }
     
     @IBAction func addButtonManual(_ sender: Any) {
-        addClaim(title: claimTitleTextField2.text ?? "", date: dateTextField2.text ?? "", manual: true)
+        addClaim(title: claimTitleTextField2.text ?? "", date: dateTextField2.text ?? "")
     }
     
-    func addClaim(title: String, date: String, manual: Bool) {
+    func addClaim(title: String, date: String) {
         let addClaim: Claim = Claim(title: title, date: date)
         claimService.addPerson(pObj: addClaim, success: { (claim) in
             let text = "Claim \(title) created"
             DispatchQueue.main.async {
-                if (!manual) {
-                    self.statusLabel.text = text
-                    self.claimTitleTextFIeld.text = ""
-                    self.dateTextField.text = "";
-                    self.dateTextField.resignFirstResponder()
-                    self.claimTitleTextFIeld.resignFirstResponder()
-                }
-                else {
-                    self.statusLabel2.text = text
-                    self.claimTitleTextField2.text = ""
-                    self.dateTextField2.text = "";
-                    self.dateTextField2.resignFirstResponder()
-                    self.claimTitleTextField2.resignFirstResponder()
-                }
-                
+                self.statusLabel2.text = text
+                self.claimTitleTextField2.text = ""
+                self.dateTextField2.text = "";
+                self.dateTextField2.resignFirstResponder()
+                self.claimTitleTextField2.resignFirstResponder()
             }
         }, failure: {
             let text = "Claim \(title) failed"
             DispatchQueue.main.async {
-                if (!manual) {
-                    self.statusLabel.text = text
-                    self.claimTitleTextFIeld.text = ""
-                    self.dateTextField.text = "";
-                    self.dateTextField.resignFirstResponder()
-                    self.claimTitleTextFIeld.resignFirstResponder()
-                }
-                else {
-                    self.statusLabel2.text = text
-                    self.claimTitleTextField2.text = ""
-                    self.dateTextField2.text = "";
-                    self.dateTextField2.resignFirstResponder()
-                    self.claimTitleTextField2.resignFirstResponder()
-                }
+                self.statusLabel2.text = text
+                self.claimTitleTextField2.text = ""
+                self.dateTextField2.text = "";
+                self.dateTextField2.resignFirstResponder()
+                self.claimTitleTextField2.resignFirstResponder()
             }
         })
     }
